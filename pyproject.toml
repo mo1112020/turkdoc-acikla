@@ -35,4 +35,4 @@ where = ["."]
 include = ["turkdoc*", "backend*"]
 
 [tool.vercel]
-entrypoint = "api.index:app"
+entrypoint = "backend.main:app"

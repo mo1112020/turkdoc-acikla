@@ -29,9 +29,12 @@ Make sure your latest code is on GitHub (including `vercel.json` and `api/index.
 2. **Import** your repo: `mo1112020/turkdoc-acikla`
 3. Framework Preset: **Other**
 4. Root Directory: `.` (default)
-5. Build Command: leave **empty**
-6. Output Directory: leave **empty**
-7. Install Command: `pip install -r requirements.txt` (auto-detected from `vercel.json`)
+5. Framework Preset: **FastAPI** (auto-detected) or **Other**
+6. Build Command: leave **empty**
+7. Output Directory: leave **empty**
+8. Install Command: `pip install -r requirements-vercel.txt` (set in `vercel.json`)
+
+> Do **not** add a custom `functions` block in `vercel.json` — Vercel CLI 54+ uses the FastAPI preset via `pyproject.toml` (`tool.vercel.entrypoint`).
 
 Click **Deploy** (it will fail until env vars are set — that's normal).
 

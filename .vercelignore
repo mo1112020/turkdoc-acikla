@@ -11,3 +11,12 @@ __pycache__
 .mypy_cache
 .ruff_cache
 *.log
+
+# Use requirements-vercel.txt (slim) via vercel.json installCommand
+requirements.txt
+
+# Docker files not needed on Vercel
+Dockerfile
+docker-compose.yml
+docker-compose.dev.yml
+docker

@@ -1,10 +1,3 @@
-"""Vercel serverless entrypoint for the FastAPI app."""
+"""Legacy Vercel entrypoint — Vercel now uses backend.main:app via pyproject.toml."""
 
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
-from backend.main import app  # noqa: E402, F401
+from backend.main import app  # noqa: F401
