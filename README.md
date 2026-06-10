@@ -19,7 +19,8 @@ Use it as a **web app** (upload, save, and revisit documents) or from the **term
 - [Configuration](#configuration)
 - [API reference](#api-reference)
 - [Deployment](#deployment)
-- [Docker](#docker-recommended-for-full-features)
+- [Railway](#deploy-to-railway-recommended)
+- [Docker](#docker-local-or-self-hosted)
 - [Security](#security)
 - [Project structure](#project-structure)
 - [Example documents](#example-documents)
@@ -241,11 +242,24 @@ In production:
 - Error responses are **sanitized**
 - Weak or missing secrets **block startup**
 
-Works on Railway, Render, Fly.io, a VPS with nginx, or any platform that runs Python + Tesseract.
+Works on **Railway** (recommended), Render, Fly.io, a VPS with nginx, or local Docker.
 
-### Docker (recommended for full features)
+### Deploy to Railway (recommended)
 
-Docker includes **Tesseract OCR**, **persistent storage**, and **file upload** — everything Vercel cannot do.
+Full features in the cloud: **photo/PDF upload**, **OCR**, and **persistent storage** (with a volume).
+
+See **[DEPLOY_RAILWAY.md](DEPLOY_RAILWAY.md)** for step-by-step setup and required secrets.
+
+Quick summary:
+
+1. [railway.com](https://railway.com) → **New Project** → deploy from GitHub
+2. Set variables: `GROQ_API_KEY`, `SECRET_KEY`, `ENVIRONMENT=production`, `RELOAD=false`
+3. Add a volume mounted at `/app/data`
+4. **Generate Domain** under Networking
+
+### Docker (local or self-hosted)
+
+Docker includes **Tesseract OCR**, **persistent storage**, and **file upload**.
 
 **1. Configure `.env`** (copy from `.env.example`):
 
@@ -288,10 +302,6 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 Uploads and the database are stored in the Docker volume `turkdoc-data` (production) or `./data` (dev compose).
 
-### Deploy to Vercel
-
-Vercel is supported with limitations (paste-text only, no OCR, ephemeral storage). See **[DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)** for step-by-step setup and required secrets.
-
 See [SECURITY.md](SECURITY.md) for the full production checklist.
 
 ---
@@ -326,8 +336,9 @@ resmi-acikla/
 ├── examples/          # Sample Turkish documents for testing
 ├── scripts/           # Secret-scanning helper
 ├── data/              # Local uploads & DB (gitignored)
-├── Dockerfile         # Production image
-├── docker-compose.yml # Run with Docker Compose
+├── Dockerfile         # Production image (Railway + Docker)
+├── railway.toml       # Railway deploy config
+├── docker-compose.yml # Run locally with Docker Compose
 ├── .env.example       # Environment template
 └── pyproject.toml     # Package & dependencies
 ```

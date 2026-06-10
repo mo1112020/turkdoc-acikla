@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
-from backend.config import IS_VERCEL, safe_error_message
+from backend.config import safe_error_message
 from backend.database import get_db
 from backend.models import Document, User
 from backend.schemas import DocumentDetail, DocumentSummary, TextDocumentCreate
@@ -118,15 +118,6 @@ async def upload_document(
     language: str = Form(default="english"),
     db: Session = Depends(get_db),
 ):
-    if IS_VERCEL:
-        raise HTTPException(
-            status_code=503,
-            detail=(
-                "Photo and PDF upload is not available on Vercel (OCR requires Tesseract). "
-                "Use the Paste text tab instead."
-            ),
-        )
-
     language = language.lower()
     if language not in ("english", "arabic"):
         raise HTTPException(status_code=400, detail="Language must be 'english' or 'arabic'")

@@ -48,7 +48,7 @@ def extract_text_from_image(image_path: str) -> str:
     Raises:
         FileNotFoundError: If the file does not exist.
         ValueError: If the format is unsupported or OCR yields too little text.
-        ImportError: If OCR dependencies are not installed (e.g. on Vercel).
+        ImportError: If OCR dependencies are not installed.
     """
     from PIL import Image
 

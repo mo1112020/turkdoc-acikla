@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.config import CORS_ORIGINS, IS_PRODUCTION, IS_VERCEL, UPLOAD_DIR, validate_settings
+from backend.config import CORS_ORIGINS, IS_PRODUCTION, UPLOAD_DIR, validate_settings
 from backend.database import Base, engine
 from backend.middleware import SecurityHeadersMiddleware
 from backend.routes import auth, documents
@@ -75,5 +75,4 @@ def health():
     return {
         "status": "ok",
         "environment": "production" if IS_PRODUCTION else "development",
-        "platform": "vercel" if IS_VERCEL else "local",
     }
