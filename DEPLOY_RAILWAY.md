@@ -31,6 +31,8 @@ In Railway: **Project → your service → Variables**
 | `RELOAD` | `false` | Recommended |
 | `HOST` | `0.0.0.0` | Recommended |
 
+> **Healthcheck failed?** The app starts even with missing vars, but analysis will not work until **both** `GROQ_API_KEY` and `SECRET_KEY` are set. Check **Deploy logs** for `Startup warning`.
+
 Generate `SECRET_KEY`:
 
 ```bash
@@ -84,7 +86,8 @@ Health check: `https://your-app.up.railway.app/health`
 |---------|-----|
 | Build fails | Check **Deployments → Build logs** |
 | `500` on analyze | Verify `GROQ_API_KEY` and `SECRET_KEY` are set |
-| App won't start | Ensure `ENVIRONMENT=production` and `SECRET_KEY` is 32+ chars |
+| Healthcheck failure | Set `GROQ_API_KEY`, `SECRET_KEY` (32+ chars), `ENVIRONMENT=production`; check Deploy logs |
+| `ready: false` on `/health` | Add missing vars from the `missing` list in the health response |
 | Documents lost after redeploy | Add volume at `/app/data` |
 | OCR fails | Dockerfile includes Tesseract — rebuild the image |
 

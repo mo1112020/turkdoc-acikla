@@ -28,12 +28,8 @@ RUN chmod +x /entrypoint.sh \
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     HOST=0.0.0.0 \
-    RELOAD=false \
-    ENVIRONMENT=production
+    RELOAD=false
 
 EXPOSE 8000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -fsS "http://127.0.0.1:${PORT:-8000}/health" || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]

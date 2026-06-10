@@ -7,7 +7,15 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.config import CORS_ORIGINS, IS_PRODUCTION, UPLOAD_DIR, validate_settings
+import sys
+
+from backend.config import (
+    CORS_ORIGINS,
+    IS_PRODUCTION,
+    UPLOAD_DIR,
+    config_status,
+    validate_settings,
+)
 from backend.database import Base, engine
 from backend.middleware import SecurityHeadersMiddleware
 from backend.routes import auth, documents
@@ -17,7 +25,11 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    validate_settings()
+    try:
+        validate_settings()
+    except RuntimeError as exc:
+        # Don't block the server from starting — Railway healthcheck needs /health.
+        print(f"Startup warning: {exc}", file=sys.stderr)
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     Base.metadata.create_all(bind=engine)
     yield
@@ -72,7 +84,10 @@ def serve_frontend():
 
 @app.get("/health")
 def health():
+    status = config_status()
     return {
-        "status": "ok",
+        "status": "ok" if status["ready"] else "degraded",
         "environment": "production" if IS_PRODUCTION else "development",
+        "ready": status["ready"],
+        "missing": status["missing"],
     }

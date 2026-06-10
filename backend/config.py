@@ -48,6 +48,17 @@ def _is_invalid_groq_key(value: str | None) -> bool:
     return not value or value.strip() == INSECURE_GROQ_PLACEHOLDER
 
 
+def config_status() -> dict:
+    """Report whether required production env vars are configured."""
+    missing: list[str] = []
+    if IS_PRODUCTION:
+        if _is_weak_secret(SECRET_KEY):
+            missing.append("SECRET_KEY")
+        if _is_invalid_groq_key(os.getenv("GROQ_API_KEY")):
+            missing.append("GROQ_API_KEY")
+    return {"ready": not missing, "missing": missing}
+
+
 def validate_settings() -> None:
     """Fail fast when production is misconfigured."""
     if not IS_PRODUCTION:
