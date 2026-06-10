@@ -7,9 +7,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-UPLOAD_DIR = DATA_DIR / "uploads"
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR / 'turkdoc.db'}")
+IS_VERCEL = os.getenv("VERCEL") == "1"
+
+if IS_VERCEL:
+    # Vercel serverless: only /tmp is writable; data resets between cold starts.
+    DATA_DIR = Path("/tmp/turkdoc-data")
+    UPLOAD_DIR = DATA_DIR / "uploads"
+    DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR / 'turkdoc.db'}")
+else:
+    DATA_DIR = BASE_DIR / "data"
+    UPLOAD_DIR = DATA_DIR / "uploads"
+    DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR / 'turkdoc.db'}")
 
 INSECURE_SECRET_DEFAULT = "change-me-in-production-use-a-long-random-string"
 INSECURE_SECRET_PLACEHOLDER = "change-me-to-a-long-random-string"

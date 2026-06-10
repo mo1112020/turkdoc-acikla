@@ -242,6 +242,10 @@ In production:
 
 Works on Railway, Render, Fly.io, a VPS with nginx, or any platform that runs Python + Tesseract.
 
+### Deploy to Vercel
+
+Vercel is supported with limitations (paste-text only, no OCR, ephemeral storage). See **[DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)** for step-by-step setup and required secrets.
+
 See [SECURITY.md](SECURITY.md) for the full production checklist.
 
 ---
