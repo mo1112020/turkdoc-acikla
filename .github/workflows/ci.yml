@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Block tracked .env
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env must not be committed. Add it to .gitignore and remove from git."
+            exit 1
+          fi
+
+      - name: Scan for leaked API keys
+        run: bash scripts/check-secrets.sh
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Verify imports
+        run: python -c "from backend.main import app; from turkdoc.explainer import explain_document"
+
+      - name: Production config rejects weak secrets
+        env:
+          ENVIRONMENT: production
+          GROQ_API_KEY: your_api_key_here
+          SECRET_KEY: change-me-to-a-long-random-string
+        run: |
+          python -c "from backend.config import validate_settings; validate_settings()" && exit 1 || exit 0

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "turkdoc"
+version = "1.0.0"
+description = "CLI tool to explain Turkish government documents in simple English or Arabic"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "groq>=0.11.0",
+    "pytesseract>=0.3.10",
+    "Pillow>=10.0.0",
+    "python-dotenv>=1.0.0",
+    "pymupdf>=1.24.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "sqlalchemy>=2.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "bcrypt>=4.0.0",
+    "python-multipart>=0.0.12",
+    "email-validator>=2.0.0",
+]
+
+[project.scripts]
+turkdoc = "turkdoc.main:app"
+turkdoc-server = "backend.run:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["turkdoc*", "backend*"]
