@@ -1,0 +1,13 @@
+# Local development: hot-reload + bind-mount source code
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+services:
+  turkdoc:
+    environment:
+      ENVIRONMENT: development
+      RELOAD: "true"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./turkdoc:/app/turkdoc
+    command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

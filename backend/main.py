@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -6,19 +7,27 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.config import CORS_ORIGINS, IS_PRODUCTION, UPLOAD_DIR, validate_settings
+from backend.config import CORS_ORIGINS, IS_PRODUCTION, IS_VERCEL, UPLOAD_DIR, validate_settings
 from backend.database import Base, engine
 from backend.middleware import SecurityHeadersMiddleware
 from backend.routes import auth, documents
 
-validate_settings()
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
-Base.metadata.create_all(bind=engine)
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    validate_settings()
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    Base.metadata.create_all(bind=engine)
+    yield
+
 
 app = FastAPI(
     title="turkdoc API",
     description="Explain Turkish government documents — upload, store, and understand.",
     version="1.0.0",
+    lifespan=lifespan,
     docs_url=None if IS_PRODUCTION else "/docs",
     redoc_url=None if IS_PRODUCTION else "/redoc",
     openapi_url=None if IS_PRODUCTION else "/openapi.json",
@@ -37,9 +46,6 @@ if CORS_ORIGINS:
 
 app.include_router(auth.router)
 app.include_router(documents.router)
-
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
@@ -66,4 +72,8 @@ def serve_frontend():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "environment": "production" if IS_PRODUCTION else "development"}
+    return {
+        "status": "ok",
+        "environment": "production" if IS_PRODUCTION else "development",
+        "platform": "vercel" if IS_VERCEL else "local",
+    }

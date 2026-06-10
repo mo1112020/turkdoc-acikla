@@ -1,0 +1,29 @@
+services:
+  turkdoc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: turkdoc:latest
+    container_name: turkdoc
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      RELOAD: "false"
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+    volumes:
+      # Persist uploads and SQLite database
+      - turkdoc-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  turkdoc-data:

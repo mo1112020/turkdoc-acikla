@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -68,13 +67,12 @@ def validate_settings() -> None:
         errors.append("GROQ_API_KEY must be set to a valid Groq API key.")
 
     if errors:
+        detail = "; ".join(errors)
         for msg in errors:
             print(f"Configuration error: {msg}", file=sys.stderr)
-        print(
-            "\nSet ENVIRONMENT=development for local work, or fix .env before deploying.",
-            file=sys.stderr,
+        raise RuntimeError(
+            f"{detail}. Set ENVIRONMENT=development for local work, or fix env vars before deploying."
         )
-        sys.exit(1)
 
 
 def safe_error_message(exc: Exception, *, fallback: str = "An internal error occurred.") -> str:

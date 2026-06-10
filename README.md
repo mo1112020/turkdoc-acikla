@@ -19,6 +19,7 @@ Use it as a **web app** (upload, save, and revisit documents) or from the **term
 - [Configuration](#configuration)
 - [API reference](#api-reference)
 - [Deployment](#deployment)
+- [Docker](#docker-recommended-for-full-features)
 - [Security](#security)
 - [Project structure](#project-structure)
 - [Example documents](#example-documents)
@@ -242,6 +243,51 @@ In production:
 
 Works on Railway, Render, Fly.io, a VPS with nginx, or any platform that runs Python + Tesseract.
 
+### Docker (recommended for full features)
+
+Docker includes **Tesseract OCR**, **persistent storage**, and **file upload** — everything Vercel cannot do.
+
+**1. Configure `.env`** (copy from `.env.example`):
+
+```env
+GROQ_API_KEY=<your-groq-key>
+SECRET_KEY=<random-48-char-string>
+ENVIRONMENT=production
+```
+
+**2. Build and run:**
+
+```bash
+docker compose up --build -d
+```
+
+Open [http://localhost:8000](http://localhost:8000)
+
+**Other commands:**
+
+```bash
+# View logs
+docker compose logs -f
+
+# Stop
+docker compose down
+
+# Rebuild after code changes
+docker compose up --build -d
+
+# Build image only (no compose)
+docker build -t turkdoc:latest .
+docker run --rm -p 8000:8000 --env-file .env -v turkdoc-data:/app/data turkdoc:latest
+```
+
+**Development with hot-reload:**
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+Uploads and the database are stored in the Docker volume `turkdoc-data` (production) or `./data` (dev compose).
+
 ### Deploy to Vercel
 
 Vercel is supported with limitations (paste-text only, no OCR, ephemeral storage). See **[DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)** for step-by-step setup and required secrets.
@@ -276,9 +322,12 @@ resmi-acikla/
 ├── backend/           # FastAPI server, database, routes
 ├── frontend/          # Web UI (HTML, CSS, JS)
 ├── turkdoc/           # CLI, OCR, Groq explainer
+├── docker/            # Docker entrypoint script
 ├── examples/          # Sample Turkish documents for testing
 ├── scripts/           # Secret-scanning helper
 ├── data/              # Local uploads & DB (gitignored)
+├── Dockerfile         # Production image
+├── docker-compose.yml # Run with Docker Compose
 ├── .env.example       # Environment template
 └── pyproject.toml     # Package & dependencies
 ```

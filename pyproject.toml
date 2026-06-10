@@ -33,3 +33,6 @@ turkdoc-server = "backend.run:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["turkdoc*", "backend*"]
+
+[tool.vercel]
+entrypoint = "api.index:app"
